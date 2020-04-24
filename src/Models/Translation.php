@@ -1,11 +1,11 @@
 <?php
 
-namespace Statch\Translations\Models;
+namespace Stacht\Translations\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Statch\Translations\Contracts\Translation as TranslationContract;
+use Stacht\Translations\Contracts\Translation as TranslationContract;
 
 class Translation extends Model implements TranslationContract
 {
@@ -47,7 +47,7 @@ class Translation extends Model implements TranslationContract
     {
         parent::__construct($attributes);
 
-        $this->setTable(config('statch-translations.table'));
+        $this->setTable(config('stacht-translations.table'));
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Statch\Translations\Traits;
+namespace Stacht\Translations\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
@@ -44,12 +44,12 @@ trait Translatable
      */
     public function translations(): MorphMany
     {
-        return $this->morphMany(config('statch-translations.model'), 'translatable');
+        return $this->morphMany(config('stacht-translations.model'), 'translatable');
     }
 
     public function determineLocale()
     {
-        $model = app(config('statch-translations.model'));
+        $model = app(config('stacht-translations.model'));
 
         $locale = method_exists($model, 'defaultLocale') ? $model->defaultLocale() : \App::getLocale();
 
@@ -61,7 +61,7 @@ trait Translatable
      *
      * @param string|null $locale
      *
-     * @return \Statch\Translations\Models\Translation
+     * @return \Stacht\Translations\Models\Translation
      */
     public function getTranslations($locale = null)
     {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Statch\Translations;
+namespace Stacht\Translations;
 
 use Illuminate\Support\ServiceProvider;
-use Statch\Translations\Contracts\Translation as TranslationContract;
-use Statch\Translations\Models\Translation;
+use Stacht\Translations\Contracts\Translation as TranslationContract;
+use Stacht\Translations\Models\Translation;
 use Illuminate\Support\Collection;
 use Illuminate\Filesystem\Filesystem;
 
@@ -21,17 +21,17 @@ class TranslationsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
                // Publishing the configuration file.
                 $this->publishes([
-                    __DIR__.'/../config/statch-translations.php' => config_path('statch-translations.php'),
+                    __DIR__.'/../config/stacht-translations.php' => config_path('stacht-translations.php'),
                 ], 'config');
 
                 // Publishing the migration file.
                   $this->publishes([
-                    __DIR__.'/../database/migrations/create_statch_translations_table.php.stub' => $this->getMigrationFileName($filesystem),
+                    __DIR__.'/../database/migrations/create_stacht_translations_table.php.stub' => $this->getMigrationFileName($filesystem),
                 ], 'migrations');
         }
 
 
-        $this->app->bind(TranslationContract::class, config('statch-translations.model'));
+        $this->app->bind(TranslationContract::class, config('stacht-translations.model'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TranslationsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/statch-translations.php', 'statch-translations');
+        $this->mergeConfigFrom(__DIR__.'/../config/stacht-translations.php', 'stacht-translations');
     }
 
 
@@ -54,8 +54,8 @@ class TranslationsServiceProvider extends ServiceProvider
         $timestamp = date('Y_m_d_His');
         return Collection::make($this->app->databasePath().DIRECTORY_SEPARATOR.'migrations'.DIRECTORY_SEPARATOR)
             ->flatMap(function ($path) use ($filesystem) {
-                return $filesystem->glob($path.'*_create_statch_translations_table.php');
-            })->push($this->app->databasePath()."/migrations/{$timestamp}_create_statch_translations_table.php")
+                return $filesystem->glob($path.'*_create_stacht_translations_table.php');
+            })->push($this->app->databasePath()."/migrations/{$timestamp}_create_stacht_translations_table.php")
             ->first();
     }
 }

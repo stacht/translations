@@ -1,13 +1,13 @@
 {
-    "name": "statch/translations",
+    "name": "stacht/translations",
     "description": ":description",
     "license": "MIT",
     "authors": [{
         "name": "Corrado Striuli",
         "email": "corrado.striuli@gmail.com"
     }],
-    "homepage": "https://bitbucket.com/statch/translations",
-    "keywords": ["Laravel", "Translations", "Statch"],
+    "homepage": "https://bitbucket.com/stacht/translations",
+    "keywords": ["Laravel", "Translations", "Stacht"],
     "require": {
         "php": "^7.2",
         "illuminate/support": "~5.8.0|^6.0|^7.0"
@@ -19,18 +19,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Statch\\Translations\\": "src/"
+            "Stacht\\Translations\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Statch\\Translations\\Tests\\": "tests"
+            "Stacht\\Translations\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Statch\\Translations\\TranslationsServiceProvider"
+                "Stacht\\Translations\\TranslationsServiceProvider"
             ]
         }
     }

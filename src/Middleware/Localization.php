@@ -1,6 +1,6 @@
 <?php
 
-namespace Statch\Translations\Middleware;
+namespace Stacht\Translations\Middleware;
 
 use Closure;
 

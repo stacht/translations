@@ -7,9 +7,9 @@ return [
      * is often just the "Translation" model but you may use whatever you like.
      *
      * The model you want to use as a Translation model needs to implement the
-     * `Statch\Translations\Contracts\Translation` contract.
+     * `Stacht\Translations\Contracts\Translation` contract.
      */
-    'model' => \Statch\Translations\Models\Translation::class,
+    'model' => \Stacht\Translations\Models\Translation::class,
 
     /*
     |--------------------------------------------------------------------------

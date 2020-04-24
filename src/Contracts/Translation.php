@@ -1,6 +1,6 @@
 <?php
 
-namespace Statch\Translations\Contracts;
+namespace Stacht\Translations\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

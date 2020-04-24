@@ -10,19 +10,19 @@ Take a look at [contributing.md](contributing.md) to see a to do list.
 Via Composer
 
 ``` bash
-$ composer require statch/translations
+$ composer require stacht/translations
 ```
 
 Publish configuration
 
 ```bash
-$ php artisan vendor:publish --provider="Statch\Translations\TranslationsServiceProvider" --tag="config"
+$ php artisan vendor:publish --provider="Stacht\Translations\TranslationsServiceProvider" --tag="config"
 ```
 
 Publish migration
 
 ```bash
-$ php artisan vendor:publish --provider="Statch\Translations\TranslationsServiceProvider" --tag="migrations"
+$ php artisan vendor:publish --provider="Stacht\Translations\TranslationsServiceProvider" --tag="migrations"
 ```
 
 
@@ -32,7 +32,7 @@ $ php artisan vendor:publish --provider="Statch\Translations\TranslationsService
 The key of making models translatable is to add the `Translatable` trait to them. By adding the trait, the package initializes a polimorphic relationship between the translatable model and the translation model automatically.
 
 ```php
-use Statch\Translations\Traits\Translatable;
+use Stacht\Translations\Traits\Translatable;
 
 class Post extends Model
 {
@@ -85,7 +85,7 @@ Why JSON? With JSON we can represent the translatable model's structure without 
 
 #### The Translations Model
 
-The models full namespace is `Statch\Translation\Models\Translation`. You can use it as any other model, no suprises here.
+The models full namespace is `Stacht\Translation\Models\Translation`. You can use it as any other model, no suprises here.
 
 
 
@@ -130,16 +130,16 @@ Here you need to pay attention, you need to "recreate" the structure of the mode
 
 If you need to EXTEND the existing `Translation` model note that:
 
-- Your `Translation` model needs to extend the `Statch\Translations\Models\Translation` model
+- Your `Translation` model needs to extend the `Stacht\Translations\Models\Translation` model
 
 If you need to REPLACE the existing `Translation` model  you need to keep the following things in mind:
 
-- Your `Translation` model needs to implement the `Statch\Translations\Contracts\Translation` contract
+- Your `Translation` model needs to implement the `Stacht\Translations\Contracts\Translation` contract
 
 In BOTH cases, whether extending or replacing, you will need to specify your new model in the configuration. To do this you must update the `model` value in the configuration file after publishing the configuration with this command:
 
 ```
-php artisan vendor:publish --provider="Statch\Translations\TranslationsServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Stacht\Translations\TranslationsServiceProvider" --tag="config"
 ```
 
 
@@ -171,5 +171,5 @@ If you discover any security related issues, please email corrado.striuli@gmail.
 
 MIT. Please see the [license file](license.md) for more information.
 
-[link-author]: https://bitbucket.com/statch
+[link-author]: https://bitbucket.com/stacht
 [link-contributors]: ../../contributors
