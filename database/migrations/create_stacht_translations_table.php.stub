@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateStatchTranslationsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+    {
+        Schema::create(config('statch-translations.table'), function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->morphs('translatable');
+            $table->string('locale')->index();
+            $table->json('data');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
+    {
+        Schema::dropIfExists(config('statch-translations.table'));
+    }
+}
