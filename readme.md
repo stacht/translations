@@ -1,7 +1,7 @@
 # Laravel Translations
 
 Simple Laravel Translation package.
-The translation mechanism is very simple. The original content (in the default language) should be stored in your translatable model. The contents in any other language should be stored in the translations model.
+The translation mechanism is very simple. The original `data` (in the default language) should be stored in your translatable model. The contents in any other language should be stored in the translations model.
 
 Take a look at [contributing.md](contributing.md) to see a to do list.
 
@@ -37,6 +37,16 @@ use Stacht\Translations\Traits\Translatable;
 class Post extends Model
 {
     use Translatable;
+
+
+    /**
+     * The attributes that could be translated.
+     *
+     * @var array
+     */
+    protected $translatable = [
+        'name',
+    ];
 }
 ```
 
@@ -50,29 +60,34 @@ $post->translations;
 Also, if you want to get a translation of a given language, you can use the `translate()` method on the model. If you omit the langauge, the method will use the current app language to get the translation. It returns the translation paired the given language or returns `null` if there is no translation.
 
 ```php
-// Returns the hungarian translation model instance if present
-$post->translate(['locale' => 'hu']);
+// Returns the spanish translation model instance if present
+$post->translate(['locale' => 'es']);
 ```
 
 If you need only the translation paired with the current application language, you can use the `translation` property. Since, it uses the `translate()`method, if there is no translation for the current language, it returns `null`.
 
 ```php
-App::setLocale('hu');
+App::setLocale('es');
 
-// Returns the hungarian translation if present
+// Returns the spanish translation if present
+$post->translation;
+
+$post->usesTranslation('it');
+
+// Returns the Italian translation if present
 $post->translation;
 ```
 
-> If you want to append the translation property to the array / JSON representation of the model, don't forget to add it to the `$appends` array.
+> If you want to append the translation property to the array / JSON representation of the model, don't forget to add it to the `$translatable` array.
 
 
 
 #### The Translations Migrations
 
-The includes the migration for the translations. The translation content is in JSON data type, what makes possible to use special MySql JSON syntax on the content column.
+The includes the migration for the translations. The translation `data` is in JSON data type, what makes possible to use special MySql JSON syntax on the `data` column.
 
 ```php
-$post->translation->update(['content->title' => 'New Title']);
+$post->translation->update(['data->title' => 'New Title']);
 ```
 
 > You need MySql 5.7+ to use the JSON feature.
@@ -111,8 +126,8 @@ The store method at the TranslationsController should look like the following:
 public function store(Request $request, Post $post)
 {
     $post->translations()->create([
-        'locale' => 'hu',
-        'content' => [
+        'locale' => 'es',
+        'data' => [
             'title' => $request->translation_title,
             'body' => $request->translation_body,
         ],
@@ -120,7 +135,7 @@ public function store(Request $request, Post $post)
 }
 ```
 
-The language attribute is required and every locale can be stored once for every post. Since, we automatically cast the content as an array, we have to provide an array when creating a model, and the rest will be done by Laravel.
+The language attribute is required and every locale can be stored once for every post. Since, we automatically cast the `data` as an array, we have to provide an array when creating a model, and the rest will be done by Laravel.
 
 Here you need to pay attention, you need to "recreate" the structure of the model what is being translated.
 
