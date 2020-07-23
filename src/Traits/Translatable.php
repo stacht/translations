@@ -4,56 +4,57 @@ namespace Stacht\Translations\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait Translatable
 {
-    /**
-     * Register a deleted model event with the dispatcher.
-     *
-     * @param \Closure|string $callback
-     */
-    abstract public static function deleted($callback);
-
-    /**
-     * Define a polymorphic one-to-many relationship.
-     *
-     * @param string $related
-     * @param string $name
-     * @param string $type
-     * @param string $id
-     * @param string $localKey
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    abstract public function morphMany($related, $name, $type = null, $id = null, $localKey = null);
+    protected $defaultLocale;
 
     /**
      * Boot the translatable trait for the model.
      */
-    public static function bootTranslations()
+    public static function bootTranslatable()
     {
-        static::deleted(function (self $model) {
-            $model->translations()->delete();
+        static::deleting(function ($model) {
+
+            if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
+                if (!$model->forceDeleting) {
+                    return;
+                }
+            }
+
+            $model->translations()->cursor()->each(fn ($translation) => $translation->delete());
         });
     }
 
+
+
     /**
      * Get all attached translations to the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function translations(): MorphMany
     {
         return $this->morphMany(config('stacht-translations.model'), 'translatable');
     }
 
-    public function determineLocale()
+    public function determineLocale(): ?string
     {
         $model = app(config('stacht-translations.model'));
+        $locale = App::getLocale();
 
-        $locale = method_exists($model, 'defaultLocale') ? $model->defaultLocale() : \App::getLocale();
+        if (method_exists($model, 'defaultLocale')) {
+            $locale = $model->defaultLocale();
+        } else if (isset($this->defaultLocale)) {
+            $locale = $this->defaultLocale;
+        }
 
         return $locale;
+    }
+
+    public function usesTranslation($locale = 'en'): void
+    {
+        $this->defaultLocale = $locale;
     }
 
     /**
@@ -63,7 +64,7 @@ trait Translatable
      *
      * @return \Stacht\Translations\Models\Translation
      */
-    public function getTranslations($locale = null)
+    public function getTranslations($locale = null): ?\Stacht\Translations\Models\Translation
     {
         if (!$this->relationLoaded('translations')) {
             $this->load('translations');
@@ -74,24 +75,20 @@ trait Translatable
     }
 
 
-    public function isTranslatableAttribute(string $key) : bool
+    public function isTranslatableAttribute(string $key): bool
     {
         return in_array($key, $this->getTranslatableAttributes());
     }
 
-    public function getTranslatableAttributes() : array
+    public function getTranslatableAttributes(): array
     {
-        return is_array($this->translatable)
-            ? $this->translatable
-            : [];
+        return Arr::wrap($this->translatable);
     }
 
     /**
      * Overwrite getAttribute method to obtain by default the translation value.
      *
      * @param string|null $key
-     *
-     * @return
      */
     public function getAttribute($key)
     {
@@ -100,7 +97,7 @@ trait Translatable
             // $data = optional($translation)->data;
             $value = Arr::get($translation, "data." . $key);
 
-            if (! empty($value)) {
+            if (!empty($value)) {
                 return $value;
             }
         }
@@ -108,12 +105,12 @@ trait Translatable
         return parent::getAttribute($key);
     }
 
-   /**
+    /**
      * Overwrite toArray method to works with Collections
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $attributes = parent::toArray();
 
@@ -122,5 +119,44 @@ trait Translatable
         }
 
         return $attributes;
+    }
+
+
+    public function setTranslationsFromRequest($translationMatchingAttributes = [])
+    {
+        $fieldValues = request()->only($this->translatable);
+
+        $this->setTranslations(request('locale'), $fieldValues, $translationMatchingAttributes);
+    }
+
+    public function setTranslations($locale, $fieldValues = [],  $translationMatchingAttributes = [])
+    {
+        $locale = $locale ?? 'en';
+
+        // By default in English should update ONLY the original model
+        if ($locale === 'en') {
+            $this->fill($fieldValues);
+        } else {
+            // Otherwise the translations record should be created
+            // @TODO: if the model isn;t stored in the database we should trigger some save?
+            // if (!$this->exists) $this->save()
+            $matchingAttributes = array_merge([
+                'locale' => $locale,
+            ], $translationMatchingAttributes);
+
+            // Remove values that are equals to the original model fields.
+            $fieldValues = array_filter($fieldValues, function ($value, $key) {
+                return $this->{$key} !== $value;
+            }, ARRAY_FILTER_USE_BOTH);
+
+            if (count($fieldValues) > 0) {
+                $this->translations()->updateOrCreate(
+                    $matchingAttributes,
+                    [
+                        'data' => $fieldValues
+                    ]
+                );
+            }
+        }
     }
 }
