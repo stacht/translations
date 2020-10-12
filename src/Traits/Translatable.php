@@ -150,12 +150,16 @@ trait Translatable
             }, ARRAY_FILTER_USE_BOTH);
 
             if (count($fieldValues) > 0) {
-                $this->translations()->updateOrCreate(
-                    $matchingAttributes,
-                    [
-                        'data' => $fieldValues
-                    ]
-                );
+                $translationModel = $this->translations()->firstOrCreate($matchingAttributes);
+
+                // When the translation it's being updated we need to merge
+                // the original data with the requested data to prevent lose
+                // any untouched key.
+                if (!$translationModel->wasRecentlyCreated) {
+                    $translationModel->update([
+                        'data' => array_merge($translationModel->data, $fieldValues);
+                    ]);
+                }
             }
         }
     }
