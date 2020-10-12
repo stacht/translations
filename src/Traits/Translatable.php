@@ -157,7 +157,7 @@ trait Translatable
                 // any untouched key.
                 if (!$translationModel->wasRecentlyCreated) {
                     $translationModel->update([
-                        'data' => array_merge($translationModel->data, $fieldValues);
+                        'data' => array_merge($translationModel->data, $fieldValues)
                     ]);
                 }
             }
