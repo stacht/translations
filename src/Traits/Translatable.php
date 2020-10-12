@@ -129,7 +129,7 @@ trait Translatable
         $this->setTranslations(request('locale'), $fieldValues, $translationMatchingAttributes);
     }
 
-    public function setTranslations($locale, $fieldValues = [],  $translationMatchingAttributes = [])
+    public function setTranslations($locale, $fieldValues = [], $translationMatchingAttributes = [])
     {
         $locale = $locale ?? 'en';
 
@@ -150,14 +150,16 @@ trait Translatable
             }, ARRAY_FILTER_USE_BOTH);
 
             if (count($fieldValues) > 0) {
-                $translationModel = $this->translations()->firstOrCreate($matchingAttributes);
+                $translationModel = $this->translations()->firstOrCreate($matchingAttributes, [
+                    'data' => $fieldValues,
+                ]);
 
                 // When the translation it's being updated we need to merge
                 // the original data with the requested data to prevent lose
                 // any untouched key.
-                if (!$translationModel->wasRecentlyCreated) {
+                if (! $translationModel->wasRecentlyCreated) {
                     $translationModel->update([
-                        'data' => array_merge($translationModel->data, $fieldValues)
+                        'data' => array_merge($translationModel->data, $fieldValues),
                     ]);
                 }
             }
