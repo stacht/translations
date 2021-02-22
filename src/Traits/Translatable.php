@@ -17,7 +17,6 @@ trait Translatable
     public static function bootTranslatable()
     {
         static::deleting(function ($model) {
-
             if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
                 if (!$model->forceDeleting) {
                     return;
@@ -27,7 +26,6 @@ trait Translatable
             $model->translations()->cursor()->each(fn ($translation) => $translation->delete());
         });
     }
-
 
 
     /**
@@ -45,7 +43,7 @@ trait Translatable
 
         if (method_exists($model, 'defaultLocale')) {
             $locale = $model->defaultLocale();
-        } else if (isset($this->defaultLocale)) {
+        } elseif (isset($this->defaultLocale)) {
             $locale = $this->defaultLocale;
         }
 
@@ -126,7 +124,13 @@ trait Translatable
     {
         $fieldValues = request()->only($this->translatable);
 
-        $this->setTranslations(request('locale'), $fieldValues, $translationMatchingAttributes);
+        if (request()->hasHeader('locale')) {
+            $locale = request()->header('locale', 'en');
+        } else {
+            $locale = request('locale', 'en');
+        }
+
+        $this->setTranslations($locale, $fieldValues, $translationMatchingAttributes);
     }
 
     public function setTranslations($locale, $fieldValues = [], $translationMatchingAttributes = [])
